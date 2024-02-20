@@ -1,89 +1,66 @@
 #include "sort.h"
-
 /**
- * _swap - swap two numbers.
- * @a: integer
- * @b: integer
+ * quick_sort_rec - sorts an array of integers in ascending order using
+ * the Selection sort algorithm using recursion
+ * @array: pointer to array
+ * @size: size of the array
+ * @array_init: initial pointer to array
+ * @size_init: initial size of the array
  **/
-
-void _swap(int *a, int *b)
+void quick_sort_rec(int *array_init, size_t size_init, int *array, size_t size)
 {
-	int tmp;
+	size_t j, aux;
+	int aux2;
+	int i = -1, n, pivot = array[size - 1];
 
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
-
-}
-
-/**
- * _split - Split the array and takes the last element as pivot
- * @arr: Array
- * @min: first element
- * @last: The last element
- * @size: size
- * Return: integer
- **/
-int _split(int *arr, int min, int last, size_t size)
-{
-	int piv;
-	int i = (min);
-	int j;
-
-	piv = arr[last];
-	for (j = min; j < last; j++)
+	if (array && size > 1)
 	{
-		if (arr[j] <= piv)
+		for (j = 0; j < size - 1; j++)
 		{
+			if (array[j] < pivot)
+			{
+				i++;
+				aux = i;
+				if (aux != j && array[j] != array[aux])
+				{
+					n = array[j];
+					array[j] = array[i];
+					array[i] = n;
+					print_array(array_init, size_init);
+				}
+			}
 
-			_swap(&arr[i], &arr[j]);
-
-
-			if (i != j)
-				print_array(arr, size);
-
-			i++;
 
 		}
-	}
-
-	_swap(&arr[i], &arr[last]);
-	if (i != j)
-		print_array(arr, size);
-
-	return (i);
-}
-
-/**
- * quick_sort_array - quick_sort_array
- * @arr: arr
- * @min: min
- * @last: last
- * @size: size
- * Return: Nothing
- */
-void quick_sort_array(int *arr, int min, int last, size_t size)
-{
-
-	int piv;
-
-	if (min < last)
-	{
-		piv = _split(arr, min, last, size);
-		quick_sort_array(arr, min, (piv - 1), size);
-		quick_sort_array(arr, (piv + 1), last, size);
+		aux2 = size;
+		if (aux2 - 1 != i + 1 && array[aux2 - 1] != array[i + 1])
+		{
+			array[size - 1] = array[i + 1];
+			array[i + 1] = pivot;
+			print_array(array_init, size_init);
+		}
+		if (i > 0)
+		{
+			quick_sort_rec(array_init, size_init, array, i + 1);
+		}
+		quick_sort_rec(array_init, size_init, array + i + 2,  size - (i + 2));
 	}
 }
-
 /**
- * quick_sort -Sort an array using quick_sort algorithm
- * @array: array
- * @size: size
- **/
+ * quick_sort - sorts an array of integers in ascending order using
+ * the Selection sort algorithm
+ * @array: pointer to array
+ * @size: size of the array
+**/
 void quick_sort(int *array, size_t size)
 {
-	if (size < 2)
-		return;
+	int *array_init;
+	size_t size_init;
 
-	quick_sort_array(array, 0, size - 1, size);
+	if (array)
+	{
+		array_init = array;
+		size_init = size;
+		quick_sort_rec(array_init, size_init, array, size);
+	}
 }

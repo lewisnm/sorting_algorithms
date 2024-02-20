@@ -1,94 +1,72 @@
 #include "sort.h"
-#include <stdlib.h>
-
 /**
- * pow_10 - calculates a positive power of 10
- * @power: power of 10 to calculate
- *
- * Return: the corresponding power of 10
- */
-
-unsigned int pow_10(unsigned int power)
-{
-	unsigned int i, result;
-
-	result = 1;
-	for (i = 0; i < power; i++)
-		result *= 10;
-	return (result);
-}
-
-/**
- * count_sort - sorts an array of integers in ascending order at a specific
- * digit location using the Counting sort algorithm
- * @array: array to sort
- * @size: size of the array to sort
- * @digit: digit to sort by
- *
- * Return: 1 if there is a need to keep sorting, 0 if not
- */
-
-
-unsigned int count_sort(int *array, size_t size, unsigned int digit)
-{
-	int i, count[10] = {0};
-	int *copy = NULL;
-	size_t j, temp, total = 0;
-	unsigned int dp1, dp2, sort = 0;
-
-	dp2 = pow_10(digit - 1);
-	dp1 = dp2 * 10;
-	copy = malloc(sizeof(int) * size);
-	if (copy == NULL)
-		exit(1);
-	for (j = 0; j < size; j++)
-	{
-		copy[j] = array[j];
-		if (array[j] / dp1 != 0)
-			sort = 1;
-	}
-	for (i = 0; i < 10 ; i++)
-		count[i] = 0;
-	for (j = 0; j < size; j++)
-		count[(array[j] % dp1) / dp2] += 1;
-	for (i = 0; i < 10; i++)
-	{
-		temp = count[i];
-		count[i] = total;
-		total += temp;
-	}
-	for (j = 0; j < size; j++)
-	{
-		array[count[(copy[j] % dp1) / dp2]] = copy[j];
-		count[(copy[j] % dp1) / dp2] += 1;
-	}
-	free(copy);
-	return (sort);
-}
-
-/**
- * radix_sort - sorts an array of integers in ascending order using
- * the Radix sort algorithm
- * @array: array to sort
- * @size: size of the array
- *
- * Return: void
- */
-
-/*
-1. The first for loop is used to determine the number of passes required to sort the array.
-2. The second for loop is used to perform the sorting.
-3. The third for loop is used to print the sorted array.
+*swap - the positions of two elements into an array
+*@array: array
+*@item1: array element
+*@item2: array element
 */
-void radix_sort(int *array, size_t size)
+void swap(int *array, ssize_t item1, ssize_t item2)
 {
-	unsigned int i, sort = 1;
+	int tmp;
 
-	if (array == NULL || size < 2)
-		return;
-	for (i = 1; sort == 1; i++)
+	tmp = array[item1];
+	array[item1] = array[item2];
+	array[item2] = tmp;
+}
+/**
+ *hoare_partition - hoare partition sorting scheme implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: size array
+ *Return: return the position of the last element sorted
+ */
+int hoare_partition(int *array, int first, int last, int size)
+{
+	int current = first - 1, finder = last + 1;
+	int pivot = array[last];
+
+	while (1)
 	{
-		sort = count_sort(array, size, i);
+
+		do {
+			current++;
+		} while (array[current] < pivot);
+		do {
+			finder--;
+		} while (array[finder] > pivot);
+		if (current >= finder)
+			return (current);
+		swap(array, current, finder);
 		print_array(array, size);
 	}
+}
+/**
+ *qs - qucksort algorithm implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: array size
+ */
+void qs(int *array, ssize_t first, ssize_t last, int size)
+{
+	ssize_t position = 0;
+
+	if (first < last)
+	{
+		position = hoare_partition(array, first, last, size);
+		qs(array, first, position - 1, size);
+		qs(array, position, last, size);
+	}
+}
+/**
+ *quick_sort_hoare - prepare the terrain to quicksort algorithm
+ *@array: array
+ *@size: array size
+ */
+void quick_sort_hoare(int *array, size_t size)
+{
+	if (!array || size < 2)
+		return;
+	qs(array, 0, size - 1, size);
 }
